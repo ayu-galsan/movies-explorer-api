@@ -77,10 +77,6 @@ const getMyUser = async (req, res, next) => {
     }
     res.status(OK_CODE).send(user);
   } catch (err) {
-    if (err.name === 'CastError') {
-      next(new BadRequestError(ValidationErrorText));
-      return;
-    }
     if (err.statusCode === NOT_FOUND_ERROR_CODE) {
       next(new NotFoundError(NotFoundIdUserErrorText));
       return;
@@ -104,6 +100,9 @@ const updateProfile = async (req, res, next) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       next(new BadRequestError(ValidationErrorText));
+      return;
+    } if (err.code === DUBLICATE_MONGOOSE_ERROR_CODE) {
+      next(new ConflictError(UserExistErrorText));
       return;
     }
     next(err);
